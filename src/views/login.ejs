@@ -1,0 +1,13 @@
+<body>
+  <section class="prompt">
+    <h1>Sign in</h1>
+    <% if (hasMessages) { %>
+    <section class="messages">
+      <% messages.forEach(function(message) { %>
+      <p><%= message %></p>
+      <% }); %>
+    </section>
+    <% } %>
+    <a class="button google" href="/auth/google">Sign in with Google</a>
+  </section>
+  </body>
