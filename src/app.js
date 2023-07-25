@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import bodyParser from "body-parser";
 import session from "express-session";
 import passport from "passport";
+import expressEjsLayouts from "express-ejs-layouts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,16 +22,21 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false}
+    saveUninitialized: false,
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static("public"));
+app.use(expressEjsLayouts);
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 app.set("layout", "layouts/layout");
-app.get('/', (req, res) => res.send('homepage'));
+app.get('/', (req, res) => res.render('index.ejs'));
 
 app.use('/', auth);
 export default app;

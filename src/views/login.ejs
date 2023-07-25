@@ -1,13 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 <body>
-  <section class="prompt">
-    <h1>Sign in</h1>
-    <% if (hasMessages) { %>
-    <section class="messages">
-      <% messages.forEach(function(message) { %>
-      <p><%= message %></p>
-      <% }); %>
-    </section>
-    <% } %>
-    <a class="button google" href="/auth/google">Sign in with Google</a>
-  </section>
-  </body>
+  <div class="container">
+    <h1>Login</h1>
+    <div class="auth-buttons">
+      <a class="google" href="/auth/google"><i class="fab fa-google"></i> Login with Google</a>
+      <a class="facebook" href="/auth/facebook"><i class="fab fa-facebook"></i> Login with Facebook</a>
+    </div>
+  </div>
+</body>
+</html>
