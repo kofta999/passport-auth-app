@@ -1,6 +1,15 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
-const isLoggedIn = (req, res, next) => req.isAuthenticated() ? next() : res.sendStatus(401);
+const isLoggedIn = (req, res, next) => req.isAuthenticated() ? next() : res.redirect("/login");
+
+const isNotLoggedIn = (req, res, next) => req.isAuthenticated() ? res.redirect("/") : next();
+
+const logOut = (req, res) => {
+  req.logout((err) => {
+    if (err) res.redirect("/login");
+    else res.redirect("/");
+  });
+};
 
 const registerUser = async (req, res) => {
   try {
@@ -20,5 +29,7 @@ const registerUser = async (req, res) => {
 
 export {
   isLoggedIn,
-  registerUser
+  isNotLoggedIn,
+  registerUser,
+  logOut
 };
