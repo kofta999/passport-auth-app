@@ -1,11 +1,12 @@
 import express from 'express';
-import { isLoggedIn } from '../controllers/auth.controller.js';
+import { isLoggedIn, registerUser } from '../controllers/auth.controller.js';
 import passport from 'passport';
-import { facebookStrategy, googleStrategy } from '../passportConfig.js';
+import { facebookStrategy, googleStrategy, localStrategy } from '../passportConfig.js';
 import User from '../models/user.js';
 
 passport.use(googleStrategy);
 passport.use(facebookStrategy);
+passport.use(localStrategy);
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser(async (user, done) => done(null, user));
 
@@ -63,6 +64,15 @@ router.get(
     });
   }
 );
+
+router.post("/register", registerUser);
+
+router.post("/login",
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+    failureFlash: true
+  }));
 
 router.get('/all', async (req, res) => res.send(await User.find()));
 

@@ -1,7 +1,9 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
+import  { Strategy as LocalStrategy } from 'passport-local';
 import User from './models/user.js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 dotenv.config();
 
 async function verify(req, accessToken, refreshToken, profile, done, type)  {
@@ -44,3 +46,18 @@ export const facebookStrategy = new FacebookStrategy({
 }, async (req, accessToken, refreshToken, profile, done) => {
   await verify(req, accessToken, refreshToken, profile, done, 'facebook');
 });
+
+
+export const localStrategy = new LocalStrategy(
+  { usernameField: "email" },
+  async (email, password, done) => {
+    try {
+      const user = await User.findOne({ email: email });
+      if (user == null) return done(null, false, { message: "No user with that email" });
+      if (await bcrypt.compare(password, user.hashedPassword)) return done(null, user);
+      else return done(null, false, { message: "password incorrect" });
+    } catch (e) {
+      return done(e);
+    }
+  }
+);
