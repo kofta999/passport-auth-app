@@ -1,11 +1,11 @@
 import express from 'express';
 import { isLoggedIn, isNotLoggedIn, registerUser, logOut } from '../controllers/auth.controller.js';
 import passport from 'passport';
-import { facebookStrategy, googleStrategy, localStrategy } from '../passportConfig.js';
+import { githubStrategy, googleStrategy, localStrategy } from '../passportConfig.js';
 import User from '../models/user.js';
 
 passport.use(googleStrategy);
-passport.use(facebookStrategy);
+passport.use(githubStrategy);
 passport.use(localStrategy);
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser(async (user, done) => done(null, user));
@@ -29,13 +29,13 @@ router.get(
 );
 
 router.get(
-  "/auth/facebook",
-  passport.authenticate("facebook")
+  "/auth/github",
+  passport.authenticate("github")
 );
 
 router.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", {
+  "/auth/github/callback",
+  passport.authenticate("github", {
     successRedirect: "/profile",
     failureRedirect: "/login"
   }),

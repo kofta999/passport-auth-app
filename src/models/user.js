@@ -7,11 +7,11 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true
+    unique: true,
+    required: true
   },
   hashedPassword: {
     type: String,
-    required: true,
     minLength: 8,
   },
   google: {
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
       type: String,
     }
   },
-  facebook: {
+  github: {
     id: {
       type: String,
     }

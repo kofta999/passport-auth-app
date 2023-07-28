@@ -1,5 +1,5 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { Strategy as GithubStrategy } from 'passport-github2';
 import  { Strategy as LocalStrategy } from 'passport-local';
 import User from './models/user.js';
 import dotenv from 'dotenv';
@@ -8,19 +8,27 @@ dotenv.config();
 
 async function verify(req, accessToken, refreshToken, profile, done, type)  {
   try {
-    const existingUser = await User.findOne({ [`${type}.id`]: profile.id });
-    if (existingUser) return done(null, existingUser);
-
-    console.log('Creating new user...');
-    const newUser = new User({
-      name: profile.displayName,
-      email: profile.emails ? profile.emails[0].value : null,
-      [type]: {
-        id: profile.id
+    const existingUser = await User.findOne({ email: profile.emails[0].value });
+    if (existingUser) {
+      if (existingUser[type].id === profile.id) {
+        return done(null, existingUser);
+      } else {
+        existingUser[type] = { id: profile.id };
+        await existingUser.save();
       }
-    });
-    await newUser.save();
-    return done(null, newUser);
+    } else {
+      console.log('Creating new user...');
+      const newUser = new User({
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        [type]: {
+          id: profile.id
+        },
+      });
+      await newUser.save();
+      return done(null, newUser);
+    }
+
   } catch (e) {
     return done(e, false);
   }
@@ -37,14 +45,13 @@ export const googleStrategy = new GoogleStrategy({
   await verify(req, accessToken, refreshToken, profile, done, 'google');
 });
 
-export const facebookStrategy = new FacebookStrategy({
-  clientID: process.env.FACEBOOK_CLIENT_ID,
-  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/facebook/callback",
+export const githubStrategy = new GithubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/github/callback",
   passReqToCallback: true,
-  profileFields: ["email", "id", "displayName"]
 }, async (req, accessToken, refreshToken, profile, done) => {
-  await verify(req, accessToken, refreshToken, profile, done, 'facebook');
+  await verify(req, accessToken, refreshToken, profile, done, 'github');
 });
 
 
@@ -54,8 +61,12 @@ export const localStrategy = new LocalStrategy(
     try {
       const user = await User.findOne({ email: email });
       if (user == null) return done(null, false, { message: "No user with that email" });
-      if (await bcrypt.compare(password, user.hashedPassword)) return done(null, user);
-      else return done(null, false, { message: "password incorrect" });
+      const userPassword = user.hashedPassword;
+      if (!userPassword || bcrypt.compare(password, userPassword)) {
+        return done(null, false, { message: "password incorrect" });
+      } else {
+        return done(null, user);
+      }
     } catch (e) {
       return done(e);
     }
