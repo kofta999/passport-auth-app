@@ -2,48 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Auth</title>
 </head>
 <body>
   <nav>
     <% if (user) { %>
-      <div class="navbar">
-        <span class="welcome-message">Welcome, <%= user.name %></span>
-        <a id="logout-btn" href="/logout">Logout</a>
+      <div>
+        <span>Welcome, <%= user.name %></span>
+        <a href="/logout">Logout</a>
       </div>
     <% } else { %>
-      <div class="navbar">
-        <a id="login-btn" href="/login">Login</a>
+      <div>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
       </div>
     <% } %>
     <%- body %>
   </nav>
-
-  <style>
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #f2f2f2;
-      padding: 10px 20px;
-    }
-
-    .welcome-message {
-      font-weight: bold;
-    }
-
-    .navbar a {
-      background-color: #333;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      padding: 5px 10px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-  </style>
 </body>
 </html>
